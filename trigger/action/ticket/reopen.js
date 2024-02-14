@@ -1,4 +1,4 @@
-const { ButtonStyle } = require('discord.js')
+const { ButtonStyle, PermissionsBitField } = require('discord.js')
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, channelLink } = require('@discordjs/builders')
 const { QuickDB } = require('quick.db')
 
@@ -18,16 +18,18 @@ module.exports = {
         const ticketindex = await db.get(`${firstMentionedMember.id}.ticket[${index}]`)
         // if (ticketindex.status) return await interaction.reply({ content: '## Ticket already open!', ephemeral: true });
 
-        await interaction.channel.messages.fetch().then(messages => {
-            const clientMessages = messages.filter(msg => msg.author.id === clientId);
-            const lastTwoMessages = Array.from(clientMessages).slice(0, 2);
-            lastTwoMessages.forEach(msg => {
-                msg.delete();
-            });
-        })
+        // await interaction.channel.fetch(interaction.message.id).then(msg => {
+        //     msg.delete()
+        //     interaction.channel.fetch({ before: msg.id, limit: 1 }).then(msg => {
+        //         msg.delete()
+        //     })
+        // })
+
+        interaction.channel.permissionOverwrites.set([
+            { id: firstMentionedMember.id, allow: PermissionsBitField.Flags.SendMessages }
+        ])
 
         await interaction.channel.setParent(ticketindex.category);
-
         await interaction.reply({ content: '## Ticket reopen!', ephemeral: true });
 
         const embed = new EmbedBuilder()

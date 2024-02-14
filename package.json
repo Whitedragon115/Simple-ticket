@@ -1,0 +1,31 @@
+{
+  "dependencies": {
+    "@discordjs/builders": "^1.6.1",
+    "@discordjs/rest": "^1.7.1",
+    "better-sqlite3": "^9.4.0",
+    "discord-html-transcripts": "^3.1.5",
+    "discord-timestamps": "^0.1.4",
+    "discord.js": "^14.14.1",
+    "fs": "^0.0.1-security",
+    "quick.db": "^9.1.7",
+    "readline": "^1.3.0",
+    "request": "^2.88.2"
+  },
+  "name": "DragonTicketBot 2.0",
+  "version": "2.0.0",
+  "description": "Simple ticket bot for Discord.",
+  "main": "index.js",
+  "scripts": {
+    ".": "node index.js",
+    "d": "node deploy.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "none"
+  },
+  "keywords": [
+    "none"
+  ],
+  "author": "Goldball1105",
+  "license": "UNLICENSED"
+}

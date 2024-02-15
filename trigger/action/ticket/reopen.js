@@ -19,18 +19,6 @@ module.exports = {
         if (ticketindex.status) return await interaction.reply({ content: '## Ticket already open!', ephemeral: true });
 
         await interaction.reply({ content: '## Ticket reopen!', ephemeral: true });
-        await interaction.channel.messages.fetch(interaction.message.id).then(msg => {
-            msg.delete();
-            interaction.channel.messages.fetch({ before: msg.id, limit: 1 }).then(msg => {
-                msg.first().delete();
-            })
-        })
-
-        interaction.channel.permissionOverwrites.set([
-            { id: ticketowner.id, allow: PermissionsBitField.Flags.SendMessages },
-            { id: ticketowner.id, allow: PermissionsBitField.Flags.ViewChannel },
-        ])
-
         await interaction.channel.setParent(ticketindex.category);
 
         const embed = new EmbedBuilder()
@@ -49,7 +37,18 @@ module.exports = {
             ticketowner.send({ embeds: [userembed] });
         }
 
-        await interaction.channel.send({ embeds: [embed] });
+        await interaction.channel.messages.fetch(interaction.message.id).then(msg => {
+            msg.delete();
+            interaction.channel.messages.fetch({ before: msg.id, limit: 1 }).then(msg => {
+                msg.first().edit({ embeds: [embed] });
+            })
+        })
+
+        await interaction.channel.permissionOverwrites.set([
+            { id: ticketowner.id, allow: PermissionsBitField.Flags.SendMessages },
+            { id: ticketowner.id, allow: PermissionsBitField.Flags.ViewChannel },
+        ])
+
         db.set(`${ticketowner.id}.ticket[${index}].status`, true)
     }
 };

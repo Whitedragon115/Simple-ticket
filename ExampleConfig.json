@@ -1,0 +1,66 @@
+{
+  "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=": "Basic",
+  "clientId": "",
+  "guildId": "",
+  "memberrole": "",
+  "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-": "Ticket",
+  "TicketAdmin": "",
+  "TicketBlacklist": "",
+  "MaxTicketOpen": 3,
+  "TicketChannel": "",
+  "TicketChannelMsgId": "",
+  "TicketLogChannel": "",
+  "AllowUserCloseTicket": false,
+  "CreateTranscript": true,
+  "AutoDeleteTicket": false,
+  "ReopenPing": true,
+  "ReopenAsking": true,
+  "CloseCategory": "",
+  "TicketCategory": [
+    {
+      "category": "Apply Media",
+      "btnName": "Media",
+      "btnEmoji": "⌨️",
+      "categoryId": "",
+      "openTicketDescription": {
+        "description": "Please provide details about the media type you're applying for and share your experience.",
+        "openping": false,
+        "openasking": true,
+        "modal": {
+          "title": "Your youtube channel link",
+          "placeholder": "https://www.youtube.com/channel/UCtVd0c0tGXuTSbU5d8cSBUg"
+        }
+      }
+    },
+    {
+      "category": "Apply Partner",
+      "btnName": "Partner",
+      "btnEmoji": "🪙",
+      "categoryId": "",
+      "openTicketDescription": {
+        "description": "Describe your organization/project and the type of partnership you're seeking.",
+        "openping": false,
+        "openasking": true,
+        "modal": {
+          "title": "Your discord invite link",
+          "placeholder": "https://discord.gg/invite"
+        }
+      }
+    },
+    {
+      "category": "Other Request",
+      "btnName": "Other",
+      "btnEmoji": "⛓️",
+      "categoryId": "",
+      "openTicketDescription": {
+        "description": "Briefly explain your request and provide relevant details.",
+        "openping": false,
+        "openasking": false,
+        "modal": {
+          "title": "",
+          "placeholder": ""
+        }
+      }
+    }
+  ]
+}

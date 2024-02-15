@@ -65,6 +65,7 @@ async function openticket(Categorytype, interaction, request) {
         name: `${interaction.user.tag}-${ticketcategory.category}`,
         type: ChannelType.GuildText,
         parent: ticketcategory.categoryId,
+        topic: interaction.user.id,
         permissionOverwrites: [
             {
                 id: interaction.guild.id,

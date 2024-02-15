@@ -15,7 +15,7 @@
   "CreateTranscript": true,
   "AutoDeleteTicket": false,
   "ReopenPing": true,
-  "ReopenAsking": false,
+  "ReopenAsking": true,
   "CloseCategory": "1204676278762999858",
   "TicketCategory": [
     {

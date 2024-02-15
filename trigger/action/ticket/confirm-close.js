@@ -22,9 +22,9 @@ module.exports = {
 
         await interaction.update({ components: [row] });
 
-        const messages = await interaction.channel.messages.fetch({ limit: 1, after: 1 });
-        const firstMessage = await messages.first();
-        const firstMentionedMember = firstMessage.mentions.members.first();
+        const topic = await interaction.channel.topic;
+        const ticketowner = await interaction.guild.members.fetch(topic)
+
         const userrow = new ActionRowBuilder()
 
         const userembed = new EmbedBuilder()
@@ -47,29 +47,29 @@ module.exports = {
                         .setURL(responseBody.link.downloadlink)
                         .setEmoji({ name: '📥' });
                     userrow.addComponents(view, download)
-                    firstMentionedMember.send({ embeds: [userembed], components: [userrow] });
+                    ticketowner.send({ embeds: [userembed], components: [userrow] });
                 })
             } catch (error) {
                 console.error('Error:', error);
                 // 处理可能出现的错误
             }
         } else {
-            firstMentionedMember.send({ embeds: [userembed] });
+            ticketowner.send({ embeds: [userembed] });
         }
 
         const targetCategory = interaction.guild.channels.cache.get(CloseCategory);
         await interaction.channel.setParent(targetCategory);
 
-        const ticketopen = await db.get(`${firstMentionedMember.id}.ticketopen`);
+        const ticketopen = await db.get(`${ticketowner.id}.ticketopen`);
         if (!ticketopen) {
-            await db.set(`${firstMentionedMember.id}.ticketopen`, 0)
+            await db.set(`${ticketowner.id}.ticketopen`, 0)
         } else {
-            await db.sub(`${firstMentionedMember.id}.ticketopen`, 1);
+            await db.sub(`${ticketowner.id}.ticketopen`, 1);
         }
 
-        const userticket = await db.get(`${firstMentionedMember.id}.ticket`)
+        const userticket = await db.get(`${ticketowner.id}.ticket`)
         const index = userticket.findIndex(user => user.channel === interaction.channel.id);
-        await db.set(`${firstMentionedMember.id}.ticket[${index}].status`, false)        
+        await db.set(`${ticketowner.id}.ticket[${index}].status`, false)        
 
         const reopenbtn = new ButtonBuilder()
             .setCustomId('@ticket-reopen')

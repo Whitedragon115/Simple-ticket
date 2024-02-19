@@ -3,11 +3,16 @@ const { CloseCategory } = require('../../config.json')
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('closeallticket')
-        .setDescription('Close all closed ticket!'),
+        .setName('delete')
+        .setDescription('Close all closed ticket!')
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('closed')
+                .setDescription('Close all closed ticket!')
+        ),
 
     async execute(interaction) {
-        await interaction.reply({ content: 'Ticket Closing' })
+        await interaction.reply({ content: 'Ticket Closing', ephemeral: true})
 
         const category_ = interaction.guild.channels.cache.get(CloseCategory);
         let i = 0;

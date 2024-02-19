@@ -6,6 +6,7 @@ const { QuickDB } = require('quick.db');
 const db = new QuickDB({ filePath: 'database.sqlite' });
 
 const f = require('../function/ticketopen.js');
+const t = require('../function/ticketuser.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 const { TicketCategory, TicketBlacklist, ReopenAsking } = require('../config.json');
 
@@ -14,7 +15,7 @@ module.exports = {
 	name: Events.InteractionCreate,
 	async execute(interaction) {
 
-		if (!interaction.isChatInputCommand() && !interaction.isButton() && !interaction.isModalSubmit()) return;
+		if (!interaction.isChatInputCommand() && !interaction.isButton() && !interaction.isModalSubmit() && !interaction.isStringSelectMenu()) return;
 		const Action = {};
 		const command = interaction.client.commands.get(interaction.commandName);
 		const ActionFolderPath = path.join(__dirname, '..', 'trigger', 'action');
@@ -23,14 +24,15 @@ module.exports = {
 		if (command) {
 			try {
 				if (interaction.isAutocomplete()) {
-					return await command.autocomplete(interaction);
+					await command.autocomplete(interaction);
 				} else {
-					return await command.execute(interaction);
+					await command.execute(interaction);
 				}
 			} catch (error) {
 				console.error(`Error executing ${interaction.commandName}`);
 				console.error(error);
 			}
+			return;
 		}
 
 		for (const folder of actionFolders) {
@@ -46,7 +48,6 @@ module.exports = {
 		const action = Action[interaction.customId];
 		const ticket = interaction.customId.match(/@ticket-(\w+)/)
 
-
 		if (ticket) {
 			if (interaction.member.roles.cache.has(TicketBlacklist)) {
 				const embed = new EmbedBuilder()
@@ -55,9 +56,11 @@ module.exports = {
 					.setColor(0xff0000);
 				return await interaction.reply({ embeds: [embed], ephemeral: true });
 			}
-			const userticketopen = await db.get(`${interaction.user.id}.ticketopen`)
+
+			const userticketopen = await db.get(`ticket.${interaction.user.id}.ticketopen`)
 			const value = ticket[1]
 			const modal = value.match(/modal_(\d+)/)
+			const remove = value.match(/remove_(\w+)/)
 
 			if (userticketopen !== null && userticketopen >= 3) {
 				const embed = new EmbedBuilder()
@@ -66,10 +69,10 @@ module.exports = {
 					.setColor(0xff0000);
 				return await interaction.reply({ embeds: [embed], ephemeral: true });
 			}
-			if(f.isNumeric(value)){
+			if (f.isNumeric(value)) {
 				if (TicketCategory[value].openTicketDescription.openasking) {
 					return f.openmodal(interaction, value)
-				}else{
+				} else {
 					return f.openticket(parseInt(value, 10), interaction)
 				}
 			}
@@ -77,20 +80,23 @@ module.exports = {
 				const request = interaction.fields.getTextInputValue('input');
 				return f.openticket(parseInt(modal[1], 10), interaction, request)
 			}
-
 			if (ReopenAsking && value == 'reopen') {
 				return f.ticketreopen(interaction)
 			}
-
 			if (value == 'reopenModal') {
 				const reasone = interaction.fields.getTextInputValue('input');
 				const action = Action['@ticket-reopen'];
 				return action.execute(interaction, client, reasone)
 			}
+			if (value.startsWith('remove_')) {
+				const index = remove[1]
+				return t.removeuser(interaction, index)
+			}
 		}
 
 		if (action) {
 			try {
+
 				await action.execute(interaction, client);
 			} catch (error) {
 				console.error(error);

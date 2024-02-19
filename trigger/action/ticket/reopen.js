@@ -12,9 +12,9 @@ module.exports = {
         const topic = await interaction.channel.topic;
         const ticketowner = await interaction.guild.members.fetch(topic)
 
-        const userticket = await db.get(`${ticketowner.id}.ticket`)
+        const userticket = await db.get(`ticket.${ticketowner.id}.ticket`)
         const index = userticket.findIndex(user => user.channel === interaction.channel.id);
-        const ticketindex = await db.get(`${ticketowner.id}.ticket[${index}]`)
+        const ticketindex = await db.get(`ticket.${ticketowner.id}.ticket[${index}]`)
 
         if (ticketindex.status) return await interaction.reply({ content: '## Ticket already open!', ephemeral: true });
 
@@ -49,6 +49,6 @@ module.exports = {
             { id: ticketowner.id, allow: PermissionsBitField.Flags.ViewChannel },
         ])
 
-        db.set(`${ticketowner.id}.ticket[${index}].status`, true)
+        db.set(`ticket.${ticketowner.id}.ticket[${index}].status`, true)
     }
 };

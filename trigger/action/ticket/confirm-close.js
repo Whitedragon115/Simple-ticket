@@ -60,16 +60,16 @@ module.exports = {
         const targetCategory = interaction.guild.channels.cache.get(CloseCategory);
         await interaction.channel.setParent(targetCategory);
 
-        const ticketopen = await db.get(`${ticketowner.id}.ticketopen`);
+        const ticketopen = await db.get(`ticket.${ticketowner.id}.ticketopen`);
         if (!ticketopen) {
-            await db.set(`${ticketowner.id}.ticketopen`, 0)
+            await db.set(`ticket.${ticketowner.id}.ticketopen`, 0)
         } else {
-            await db.sub(`${ticketowner.id}.ticketopen`, 1);
+            await db.sub(`ticket.${ticketowner.id}.ticketopen`, 1);
         }
 
-        const userticket = await db.get(`${ticketowner.id}.ticket`)
+        const userticket = await db.get(`ticket.${ticketowner.id}.ticket`)
         const index = userticket.findIndex(user => user.channel === interaction.channel.id);
-        await db.set(`${ticketowner.id}.ticket[${index}].status`, false)        
+        await db.set(`ticket.${ticketowner.id}.ticket[${index}].status`, false)        
 
         const reopenbtn = new ButtonBuilder()
             .setCustomId('@ticket-reopen')

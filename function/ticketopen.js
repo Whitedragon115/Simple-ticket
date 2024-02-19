@@ -84,14 +84,15 @@ async function openticket(Categorytype, interaction, request) {
 
     const userid = interaction.user.id;
     await db.init()
-    await db.add(`${userid}.ticketopen`, 1)
-    await db.push(`${userid}.ticket`, {
+    await db.add(`ticket.${userid}.ticketopen`, 1)
+    await db.push(`ticket.${userid}.ticket`, {
         channel: channel.id,
         category: channel.parentId,
         type: TicketCategory[Categorytype].category,
         request: request,
         time: Date.now(),
-        status: true
+        status: true,
+        user:[]
     })
 
     const embed = new EmbedBuilder()

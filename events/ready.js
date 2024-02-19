@@ -1,6 +1,5 @@
 const { Events } = require('discord.js');
 const { clientId, guildId } = require('../config.json');
-const { check } = require('../function/check');
 const { QuickDB } = require('quick.db');
 const db = new QuickDB({ filePath: 'database.sqlite' });
 
@@ -18,7 +17,6 @@ module.exports = {
         const memberCount = guild.memberCount;
         console.log(`\x1B[32mServer have \x1B[33m${memberCount} \x1B[32mmembers\x1B[34m`);
 
-        check(client);
         await db.init();
 
     },

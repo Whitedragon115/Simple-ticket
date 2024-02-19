@@ -1,7 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('@discordjs/builders');
 const { TicketCategory, TicketChannel, TicketChannelMsgId, clientId } = require('../config.json');
 const { OpenTicketBoard } = require('../lang.json')
-const { editdata } = require('../function/check.js')
+const { editdata, check } = require('../function/check.js')
 module.exports = {
     name: 'ready',
     async execute(interaction, client) {
@@ -30,6 +30,7 @@ module.exports = {
             row.addComponents(button);
         }
         
+        await check(client);
         const msg = await channel.messages.fetch();
         const msg_ = msg.find(m => m.id == TicketChannelMsgId);
         if(!TicketChannelMsgId || !msg_ || msg_.author.id != clientId){

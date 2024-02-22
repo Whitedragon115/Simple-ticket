@@ -1,11 +1,12 @@
 const { PermissionsBitField, ChannelType, ButtonStyle, TextInputStyle } = require('discord.js')
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder } = require('@discordjs/builders')
-const dt = require('discord-html-transcripts');
 const { QuickDB } = require('quick.db');
 
 const db = new QuickDB({ filePath: 'database.sqlite' });
+const { loginfo } = require('./ticketuser.js')
 const { TicketAdmin, TicketCategory } = require('../config.json')
 const { TicketCreate } = require('../lang.json')
+
 
 function isNumeric(str) {
     if (typeof str != "string") return false
@@ -55,7 +56,7 @@ function openmodal(interaction, value) {
 
 }
 
-async function openticket(Categorytype, interaction, request) {
+async function openticket(Categorytype, interaction, client, request) {
 
     const ticketcategory = TicketCategory[Categorytype];
     const category = interaction.guild.channels.cache.get(ticketcategory.categoryId);
@@ -81,19 +82,29 @@ async function openticket(Categorytype, interaction, request) {
             },
         ],
     });
+    if(!request){
+        request = "No request provided"
+    }
 
-    const userid = interaction.user.id;
-    await db.init()
-    await db.add(`ticket.${userid}.ticketopen`, 1)
-    await db.push(`ticket.${userid}.ticket`, {
+    const time_ = Math.floor(Date.now() / 1000).toString();
+    console.log(time_);
+
+    const json = {
         channel: channel.id,
         category: channel.parentId,
         type: TicketCategory[Categorytype].category,
         request: request,
-        time: Date.now(),
+        time: time_,
         status: true,
         user:[]
-    })
+    }
+
+    const userid = interaction.user.id;
+    await db.init()
+    await db.add(`ticket.${userid}.ticketopen`, 1)
+    await db.push(`ticket.${userid}.ticket`, json)
+
+    client.log("open", loginfo(interaction, json), interaction)
 
     const embed = new EmbedBuilder()
         .setTitle(TicketCreate.title)

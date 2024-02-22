@@ -26,7 +26,21 @@ async function removeuser(interaction, user) {
     await interaction.reply({ embeds: [embed], ephemeral: true });
 }
 
+async function loginfo(interaction, json){
+    const responce = {
+        user: {
+            id: interaction.user.id,
+            tag: interaction.user.tag
+        },
+        guild: interaction.guild.name,
+        main: json
+    }
 
-module.exports = {
-    removeuser
+    return responce
+}
+
+
+module.exports = { 
+    removeuser,
+    loginfo
 }

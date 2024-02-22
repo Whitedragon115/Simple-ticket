@@ -13,7 +13,7 @@ const { TicketCategory, TicketBlacklist, ReopenAsking } = require('../config.jso
 
 module.exports = {
 	name: Events.InteractionCreate,
-	async execute(interaction) {
+	async execute(interaction, client) {
 
 		if (!interaction.isChatInputCommand() && !interaction.isButton() && !interaction.isModalSubmit() && !interaction.isStringSelectMenu()) return;
 		const Action = {};
@@ -73,12 +73,13 @@ module.exports = {
 				if (TicketCategory[value].openTicketDescription.openasking) {
 					return f.openmodal(interaction, value)
 				} else {
-					return f.openticket(parseInt(value, 10), interaction)
+					return f.openticket(parseInt(value, 10), interaction, client)
 				}
 			}
 			if (value.startsWith('modal_')) {
 				const request = interaction.fields.getTextInputValue('input');
-				return f.openticket(parseInt(modal[1], 10), interaction, request)
+				// client.log("open", t.loginfo(interaction, parseInt(value, 10)), request)
+				return f.openticket(parseInt(modal[1], 10), interaction, client, request)
 			}
 			if (ReopenAsking && value == 'reopen') {
 				return f.ticketreopen(interaction)

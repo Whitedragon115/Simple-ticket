@@ -29,6 +29,8 @@ for (const folder of commandFolders) {
 console.log(`\x1B[37m-----------Load total [${c_count}] commands-----------\x1B[0m`)
 //====================================
 
+client.log = require('./trigger/log.js').log;
+
 const eventsPath = path.join(__dirname, 'events');
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
@@ -36,9 +38,9 @@ for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
 	const event = require(filePath);
 	if (event.once) {
-		client.once(event.name, (...args) => event.execute(...args));
+		client.once(event.name, (...args) => event.execute(...args, client));
 	} else {
-		client.on(event.name, (...args) => event.execute(...args));
+		client.on(event.name, (...args) => event.execute(...args, client));
 	}
 }
 //====================================

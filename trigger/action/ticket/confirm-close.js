@@ -5,6 +5,7 @@ const { QuickDB } = require('quick.db')
 
 const { CloseCategory, CreateTranscript, AutoDeleteTicket } = require('../../../config.json')
 const { transcript } = require('../../../function/ticketclose.js')
+const { loginfo } = require('../../../function/ticketuser.js')
 const db = new QuickDB({ filePath: 'database.sqlite' });
 
 module.exports = {
@@ -33,6 +34,12 @@ module.exports = {
             .setDescription(`Your ticket has been closed in ${interaction.guild.name}`)
             .setTimestamp();
 
+        let link = {
+            active: false,
+            normal: undefined,
+            download: undefined
+        };
+
         if (CreateTranscript) {
             try {
                 await transcript(interaction).then(responseBody => {
@@ -48,6 +55,11 @@ module.exports = {
                         .setEmoji({ name: '📥' });
                     userrow.addComponents(view, download)
                     ticketowner.send({ embeds: [userembed], components: [userrow] });
+
+                    link.normal = responseBody.link.normallink;
+                    link.download = responseBody.link.downloadlink;
+                    link.active = true;
+
                 })
             } catch (error) {
                 console.error('Error:', error);
@@ -100,6 +112,15 @@ module.exports = {
         row2.setComponents(deletebtn, reopenbtn)
 
         interaction.channel.send({ embeds: [embed], components: [row2] })
+
+        const json = {
+            ticketowner: ticketowner.id,
+            channel: interaction.channel.id,
+            time: Math.floor(Date.now() / 1000).toString(),
+            link: link,
+        }
+
+        client.log("close", loginfo(interaction, json), interaction)
 
     }
 }

@@ -3,6 +3,7 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, channelLink } = require('
 const { QuickDB } = require('quick.db')
 
 const { ReopenPing, clientId } = require('../../../config.json')
+const { loginfo } = require('../../../function/ticketuser.js')
 const db = new QuickDB({ filePath: 'database.sqlite' });
 
 module.exports = {
@@ -50,5 +51,16 @@ module.exports = {
         ])
 
         db.set(`ticket.${ticketowner.id}.ticket[${index}].status`, true)
+
+        if(!reasone) reasone = 'No reason provided'
+
+        const json = {
+            ticketowner: ticketowner.id,
+            channel: interaction.channel.id,
+            time: Math.floor(Date.now() / 1000).toString(),
+            reasone: reasone
+        }
+
+        client.log('reopen', loginfo(interaction, json), interaction);
     }
 };

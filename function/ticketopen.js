@@ -86,15 +86,12 @@ async function openticket(Categorytype, interaction, client, request) {
         request = "No request provided"
     }
 
-    const time_ = Math.floor(Date.now() / 1000).toString();
-    console.log(time_);
-
     const json = {
         channel: channel.id,
         category: channel.parentId,
         type: TicketCategory[Categorytype].category,
         request: request,
-        time: time_,
+        time: Math.floor(Date.now() / 1000).toString(),
         status: true,
         user:[]
     }

@@ -3,6 +3,7 @@ const readline = require('readline');
 const fs = require('node:fs');
 const path = require('node:path');
 const { TicketChannel, TicketLogChannel, CloseCategory, TicketCategory, memberrole, TicketAdmin, TicketBlacklist, clientId, guildId } = require('../config.json');
+const { log } = require('console');
 
 const configpath = path.join(__dirname, '../config.json');
 const configdata = fs.readFileSync(configpath);
@@ -193,23 +194,41 @@ async function check(client) {
         }
     });
 
+    await logwebhook(client);
+
 }
 
 function PermCheck(interaction) {
-    if (!interaction.member.roles.cache.has(TicketAdmin) ) {
+    if (!interaction.member.roles.cache.has(TicketAdmin)) {
         interaction.editReply({ content: `## You do not have the permission to use this command`, ephemeral: true });
         return true;
     }
 }
 
 function ChannelCheck(interaction) {
-    for(const category of TicketCategory){
+    for (const category of TicketCategory) {
         if (interaction.channel.parentId == category.categoryId) {
             return false;
         }
     }
 
     return interaction.editReply({ content: `## You can only use this command in ticket channel`, ephemeral: true });
+}
+
+async function logwebhook(client) {
+
+    const channel = await client.channels.fetch(TicketLogChannel);
+    const webhooks = await channel.fetchWebhooks();
+    let webhook = webhooks.find(wh => wh.token);
+
+    if (!webhook) {
+        await channel.createWebhook({
+            name: 'Ticket Log',
+            avatar: 'https://i.imgur.com/SKLpVHC.png'
+        }).then(res => {
+            webhook = res.find(wh => wh.token);
+        })
+    }
 }
 
 module.exports = {

@@ -6,16 +6,19 @@ module.exports = {
     customId: 'ticket-close',
     async execute(interaction, client) {
 
+        //====== check if the user is allowed to close the ticket
         if(!AllowUserCloseTicket){
             if(!interaction.member.roles.cache.has(TicketAdmin)){
                 return interaction.reply({ content:'**Sorry you can\'t close the ticket**', ephemeral:true })
             }
         }
 
+        //====== check if the ticket is already closed
         if(interaction.channel.parentId == CloseCategory){
             return interaction.reply({ content:'**This ticket has been closed**', ephemeral:true })
         }
 
+        //====== create the confirm close button
         const embed = new EmbedBuilder()
             .setColor(0xf44336)
             .setTitle('Confirm Close Ticket')

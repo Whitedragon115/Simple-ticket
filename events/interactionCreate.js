@@ -45,10 +45,12 @@ module.exports = {
 			}
 		}
 
+		//====== check if the interaction is match with @ticket-
 		const action = Action[interaction.customId];
 		const ticket = interaction.customId.match(/@ticket-(\w+)/)
 
 		if (ticket) {
+			//====== check if the user is blacklisted
 			if (interaction.member.roles.cache.has(TicketBlacklist)) {
 				const embed = new EmbedBuilder()
 					.setTitle('Blacklisted')
@@ -57,11 +59,13 @@ module.exports = {
 				return await interaction.reply({ embeds: [embed], ephemeral: true });
 			}
 
+			//====== get user ticket open
 			const userticketopen = await db.get(`ticket.${interaction.user.id}.ticketopen`)
 			const value = ticket[1]
 			const modal = value.match(/modal_(\d+)/)
 			const remove = value.match(/remove_(\w+)/)
 
+			//====== check if the user has reached the ticket limit
 			if (userticketopen !== null && userticketopen >= 3) {
 				const embed = new EmbedBuilder()
 					.setTitle('Ticket Limit Reached')

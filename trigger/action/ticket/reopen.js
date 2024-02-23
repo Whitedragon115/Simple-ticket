@@ -9,14 +9,16 @@ const db = new QuickDB({ filePath: 'database.sqlite' });
 module.exports = {
     customId: '@ticket-reopen',
     async execute(interaction, client, reasone) {
-
+        //====== get the ticket owner
         const topic = await interaction.channel.topic;
         const ticketowner = await interaction.guild.members.fetch(topic)
 
+        //====== get ticket owner database
         const userticket = await db.get(`ticket.${ticketowner.id}.ticket`)
         const index = userticket.findIndex(user => user.channel === interaction.channel.id);
         const ticketindex = await db.get(`ticket.${ticketowner.id}.ticket[${index}]`)
 
+        //====== check if the ticket is already open
         if (ticketindex.status) return await interaction.reply({ content: '## Ticket already open!', ephemeral: true });
 
         await interaction.reply({ content: '## Ticket reopen!', ephemeral: true });
@@ -38,6 +40,7 @@ module.exports = {
             ticketowner.send({ embeds: [userembed] });
         }
 
+        //delete close msg and edit the reopen msg
         await interaction.channel.messages.fetch(interaction.message.id).then(msg => {
             msg.delete();
             interaction.channel.messages.fetch({ before: msg.id, limit: 1 }).then(msg => {
@@ -45,6 +48,7 @@ module.exports = {
             })
         })
 
+        //====== update the permission
         await interaction.channel.permissionOverwrites.set([
             { id: ticketowner.id, allow: PermissionsBitField.Flags.SendMessages },
             { id: ticketowner.id, allow: PermissionsBitField.Flags.ViewChannel },
@@ -52,6 +56,7 @@ module.exports = {
 
         db.set(`ticket.${ticketowner.id}.ticket[${index}].status`, true)
 
+        //====== log the reopen
         if(!reasone) reasone = 'No reason provided'
 
         const json = {

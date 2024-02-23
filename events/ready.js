@@ -8,6 +8,7 @@ module.exports = {
     name: Events.ClientReady,
     once: true,
     async execute(client) {        
+        //set bot activity
         client.user.setActivity({ name: 'dragoncode.dev', type: 3 });
 
         console.log(`\x1B[32mLogin : Bot \x1B[33m${client.user.tag}\n\x1B[32mBotID : \x1B[33m${clientId}\x1B[0m`);
@@ -17,6 +18,7 @@ module.exports = {
         const memberCount = guild.memberCount;
         console.log(`\x1B[32mServer have \x1B[33m${memberCount} \x1B[32mmembers\x1B[34m`);
 
+        //====== init the database
         await db.init();
 
     },

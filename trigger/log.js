@@ -4,11 +4,12 @@ const { TicketLogChannel } = require('../config.json')
 
 module.exports = {
     async log(type, info, interaction) {
+        //========= Get the webhook
         const channel = interaction.guild.channels.cache.get(TicketLogChannel);
         const webhooks = await channel.fetchWebhooks();
         const webhook = webhooks.find(wh => wh.token);
 
-
+        //========= Get the log info
         info.then(jsoninfo => {
             switch (type) {
                 case "open":

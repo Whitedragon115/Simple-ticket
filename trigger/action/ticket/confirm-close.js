@@ -21,6 +21,7 @@ module.exports = {
         const row = new ActionRowBuilder()
             .addComponents(disabledButton)
 
+        //====== disable the confirm button
         await interaction.update({ components: [row] });
 
         const topic = await interaction.channel.topic;
@@ -40,6 +41,7 @@ module.exports = {
             download: undefined
         };
 
+        //====== create the transcript or not
         if (CreateTranscript) {
             try {
                 await transcript(interaction).then(responseBody => {
@@ -69,6 +71,7 @@ module.exports = {
             ticketowner.send({ embeds: [userembed] });
         }
 
+        //====== move the channel to close category
         const targetCategory = interaction.guild.channels.cache.get(CloseCategory);
         await interaction.channel.setParent(targetCategory);
 
@@ -79,6 +82,7 @@ module.exports = {
             await db.sub(`ticket.${ticketowner.id}.ticketopen`, 1);
         }
 
+        //====== update the ticket status
         const userticket = await db.get(`ticket.${ticketowner.id}.ticket`)
         const index = userticket.findIndex(user => user.channel === interaction.channel.id);
         await db.set(`ticket.${ticketowner.id}.ticket[${index}].status`, false)        
@@ -113,6 +117,7 @@ module.exports = {
 
         interaction.channel.send({ embeds: [embed], components: [row2] })
 
+        //====== log the close
         const json = {
             ticketowner: ticketowner.id,
             channel: interaction.channel.id,

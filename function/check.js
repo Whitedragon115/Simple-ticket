@@ -13,6 +13,7 @@ function execute() {
 };
 
 function editdata(option, newdata) {
+    //====== edit the channel id in the config file
     if (jsondata.hasOwnProperty(option)) {
         jsondata[option] = newdata;
         execute();
@@ -24,6 +25,7 @@ function editdata(option, newdata) {
 }
 
 function editcategorydata(newdata, index) {
+    //====== edit the category id in the config file
     const category = jsondata.TicketCategory[index];
     if (category) {
         jsondata.TicketCategory[index].categoryId = newdata;
@@ -51,6 +53,7 @@ function readlineSync(question) {
 }
 
 async function creatchannel(guild, name) {
+    //====== create a channel
     const channel = await guild.channels.create({
         name: name,
         type: ChannelType.GuildText,
@@ -74,6 +77,7 @@ async function creatchannel(guild, name) {
 }
 
 async function creatcategory(guild, name) {
+    //====== create the category
     const channel = await guild.channels.create({
         name: name,
         type: ChannelType.GuildCategory,
@@ -100,6 +104,7 @@ async function rolecheck(client) {
     const guild = await client.guilds.fetch(guildId);
     let sucess = true;
 
+    //====== check if the role is exist
     if (!memberrole || guild.roles.cache.get(memberrole) == undefined) {
         console.log('Member Role not found');
         sucess = false;
@@ -120,6 +125,7 @@ async function channelcheck(client) {
     const guild = await client.guilds.fetch(guildId);
     let sucess = true;
 
+    //====== check if the channel is exist
     if (guild.channels.cache.get(TicketChannel) == undefined) {
         console.log('Ticket Channel not found');
         if (!TicketChannel) {
@@ -199,6 +205,7 @@ async function check(client) {
 }
 
 function PermCheck(interaction) {
+    //====== check if the user have the permission to use the command
     if (!interaction.member.roles.cache.has(TicketAdmin)) {
         interaction.editReply({ content: `## You do not have the permission to use this command`, ephemeral: true });
         return true;
@@ -206,6 +213,7 @@ function PermCheck(interaction) {
 }
 
 function ChannelCheck(interaction) {
+    //====== check if the command is used in ticket channel
     for (const category of TicketCategory) {
         if (interaction.channel.parentId == category.categoryId) {
             return false;
@@ -217,6 +225,7 @@ function ChannelCheck(interaction) {
 
 async function logwebhook(client) {
 
+    //====== check if there is a webhook in the ticket log channel
     const channel = await client.channels.fetch(TicketLogChannel);
     const webhooks = await channel.fetchWebhooks();
     let webhook = webhooks.find(wh => wh.token);

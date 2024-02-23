@@ -5,15 +5,18 @@ const db = new QuickDB({ filePath: 'database.sqlite' });
 
 async function removeuser(interaction, user, client) {
 
+    //====== get the ticket owner
     const ticketowner = await interaction.guild.members.fetch(user)
     const userticket = await db.get(`ticket.${ticketowner.id}.ticket`)
     const index = userticket.findIndex(user => user.channel === interaction.channel.id);
 
+    //====== get stringmenu vaule
     const vaule = interaction.values[0]
     const option = await interaction.guild.members.fetch(vaule)
 
     await db.pull(`ticket.${ticketowner.id}.ticket[${index}].user`, vaule)
 
+    //====== update the permission
     await interaction.channel.permissionOverwrites.set([
         { id: vaule, deny: PermissionsBitField.Flags.ViewChannel },
     ])
@@ -25,6 +28,7 @@ async function removeuser(interaction, user, client) {
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
 
+    //====== log the remove user
     const json = {
         ticketowner: ticketowner.id,
         channel: interaction.channel.id,
@@ -36,6 +40,8 @@ async function removeuser(interaction, user, client) {
 }
 
 async function loginfo(interaction, json) {
+
+    //====== create the log info
     const responce = {
         user: {
             id: interaction.user.id,

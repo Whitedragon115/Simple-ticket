@@ -197,7 +197,7 @@ async function check(client) {
 
 function PermCheck(interaction) {
     if (!interaction.member.roles.cache.has(TicketAdmin) ) {
-        interaction.reply({ content: `## You do not have the permission to use this command`, ephemeral: true });
+        interaction.editReply({ content: `## You do not have the permission to use this command`, ephemeral: true });
         return true;
     }
 }
@@ -209,7 +209,7 @@ function ChannelCheck(interaction) {
         }
     }
 
-    return interaction.reply({ content: `## You can only use this command in ticket channel`, ephemeral: true });
+    return interaction.editReply({ content: `## You can only use this command in ticket channel`, ephemeral: true });
 }
 
 module.exports = {

@@ -3,7 +3,7 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBu
 const { QuickDB } = require('quick.db')
 const db = new QuickDB({ filePath: 'database.sqlite' });
 
-async function removeuser(interaction, user) {
+async function removeuser(interaction, user, client) {
 
     const ticketowner = await interaction.guild.members.fetch(user)
     const userticket = await db.get(`ticket.${ticketowner.id}.ticket`)
@@ -11,7 +11,7 @@ async function removeuser(interaction, user) {
 
     const vaule = interaction.values[0]
     const option = await interaction.guild.members.fetch(vaule)
-    
+
     await db.pull(`ticket.${ticketowner.id}.ticket[${index}].user`, vaule)
 
     await interaction.channel.permissionOverwrites.set([
@@ -24,9 +24,18 @@ async function removeuser(interaction, user) {
         .setColor(0x6eaadc);
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
+
+    const json = {
+        ticketowner: ticketowner.id,
+        channel: interaction.channel.id,
+        time: Math.floor(Date.now() / 1000).toString(),
+        user: vaule,
+    }
+
+    client.log("userremove", loginfo(interaction, json), interaction)
 }
 
-async function loginfo(interaction, json){
+async function loginfo(interaction, json) {
     const responce = {
         user: {
             id: interaction.user.id,
@@ -40,7 +49,7 @@ async function loginfo(interaction, json){
 }
 
 
-module.exports = { 
+module.exports = {
     removeuser,
     loginfo
 }

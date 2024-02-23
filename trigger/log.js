@@ -45,19 +45,19 @@ module.exports = {
                         // )
                         .setColor(0x6eaadc);
 
-                        if(jsoninfo.main.link.active){
-                            closeembed.addFields(
-                                { name: 'transcript', value: `[\`View Online\`](<${jsoninfo.main.link.normal}>) **|** [\`Download here\`](<${jsoninfo.main.link.download}>)`, inline: true },
-                                { name: 'time', value: `<t:${jsoninfo.main.time}:R>`, inline: true },
-                                { name: 'channel', value: `<#${jsoninfo.main.channel}>` }
-                            )
-                        }else{
-                            closeembed.addFields(
-                                { name: 'transcript', value: `\`Transcript is not active\``, inline: true },
-                                { name: 'time', value: `<t:${jsoninfo.main.time}:R>`, inline: true },
-                                { name: 'channel', value: `<#${jsoninfo.main.channel}>` }
-                            )
-                        }
+                    if (jsoninfo.main.link.active) {
+                        closeembed.addFields(
+                            { name: 'transcript', value: `[\`View Online\`](<${jsoninfo.main.link.normal}>) **|** [\`Download here\`](<${jsoninfo.main.link.download}>)`, inline: true },
+                            { name: 'time', value: `<t:${jsoninfo.main.time}:R>`, inline: true },
+                            { name: 'channel', value: `<#${jsoninfo.main.channel}>` }
+                        )
+                    } else {
+                        closeembed.addFields(
+                            { name: 'transcript', value: `\`Transcript is not active\``, inline: true },
+                            { name: 'time', value: `<t:${jsoninfo.main.time}:R>`, inline: true },
+                            { name: 'channel', value: `<#${jsoninfo.main.channel}>` }
+                        )
+                    }
 
                     channel.send({ embeds: [closeembed] });
                     break;
@@ -67,7 +67,7 @@ module.exports = {
                         .setDescription(`<@${jsoninfo.user.id}> ticket has been deleted by <@${jsoninfo.user.id}>`)
                         .addFields(
                             { name: 'time', value: `<t:${jsoninfo.main.time}:R>`, inline: true },
-                            { name: 'channel name', value: `__**${jsoninfo.main.channel}**__`, inline: true}
+                            { name: 'channel name', value: `__**${jsoninfo.main.channel}**__`, inline: true }
                         )
                         .setColor(0x6eaadc);
 
@@ -77,7 +77,7 @@ module.exports = {
                 case "useradd":
                     const useraddembed = new EmbedBuilder()
                         .setTitle('User Added')
-                        .setDescription(`<@${jsoninfo.user.id}> has been added to the ticket by <@${jsoninfo.main.ticketowner}>`)
+                        .setDescription(`<@${jsoninfo.main.user}> has been added to the <@${jsoninfo.main.ticketowner}> ticket`)
                         .addFields(
                             { name: 'time', value: `<t:${jsoninfo.main.time}:R>`, inline: true },
                             { name: 'channel', value: `<#${jsoninfo.main.channel}>`, inline: true }
@@ -85,6 +85,19 @@ module.exports = {
                         .setColor(0x6eaadc);
 
                     channel.send({ embeds: [useraddembed] });
+                    break;
+
+                case "userremove":
+                    const userremoveembed = new EmbedBuilder()
+                        .setTitle('User removed')
+                        .setDescription(`<@${jsoninfo.main.user}> has been removed from the <@${jsoninfo.main.ticketowner}> ticket`)
+                        .addFields(
+                            { name: 'time', value: `<t:${jsoninfo.main.time}:R>`, inline: true },
+                            { name: 'channel', value: `<#${jsoninfo.main.channel}>`, inline: true }
+                        )
+                        .setColor(0x6eaadc);
+
+                    channel.send({ embeds: [userremoveembed] });
                     break;
             }
 

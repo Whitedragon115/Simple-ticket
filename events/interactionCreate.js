@@ -24,9 +24,9 @@ module.exports = {
 		if (command) {
 			try {
 				if (interaction.isAutocomplete()) {
-					await command.autocomplete(interaction);
+					await command.autocomplete(interaction, client);
 				} else {
-					await command.execute(interaction);
+					await command.execute(interaction, client);
 				}
 			} catch (error) {
 				console.error(`Error executing ${interaction.commandName}`);
@@ -91,22 +91,24 @@ module.exports = {
 			}
 			if (value.startsWith('remove_')) {
 				const index = remove[1]
-				return t.removeuser(interaction, index)
+				return t.removeuser(interaction, index, client)
 			}
 		}
 
 		if (action) {
 			try {
-
 				await action.execute(interaction, client);
 			} catch (error) {
 				console.error(error);
 				const embed = new EmbedBuilder()
-					.setTitle('An error occurred')
-					.setDescription('An error occurred while handling this interaction.')
-					.setColor(0xff0000);
-				await interaction.reply({ embeds: [embed], ephemeral: true });
-				console.log(error)
+						.setTitle('An error occurred')
+						.setDescription('An error occurred while handling this interaction.')
+						.setColor(0xff0000);
+				try {
+					await interaction.reply({ embeds: [embed], ephemeral: true });
+				}catch (error) {
+					await interaction.editReply({ embeds: [embed], ephemeral: true });
+				}
 			}
 		}
 	},

@@ -1,6 +1,8 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('@discordjs/builders');
+const { PermissionsBitField } = require('discord.js')
 const { CloseCategory } = require('../../config.json')
 const { PermCheck, ChannelCheck } = require('../../function/check.js')
+const { loginfo } = require('../../function/ticketuser.js')
 const { QuickDB } = require('quick.db')
 const db = new QuickDB({ filePath: 'database.sqlite' });
 
@@ -23,10 +25,9 @@ module.exports = {
             subcommand
                 .setName('remove')
                 .setDescription('remove a user from the ticket!')
-                .addUserOption(option => option.setName('user').setDescription('The user to be add of the ticket').setRequired(true))
         ),
 
-    async execute(interaction) {
+    async execute(interaction, client) {
         const subcommand = interaction.options.getSubcommand();
         const user = interaction.options.getUser('user');
 
@@ -66,9 +67,9 @@ module.exports = {
         }
 
         async function add(interaction) {
-
+            interaction.deferReply({ ephemeral: true });
             if (PermCheck(interaction) || ChannelCheck(interaction)) return;
-            if (user.bot) return interaction.reply({ content: `## You can't add a bot to the ticket!`, ephemeral: true });
+            if (user.bot) return interaction.editReply({ content: `## You can't add a bot to the ticket!`, ephemeral: true });
 
             const include = await db.get(`ticket.${ticketowner.id}.ticket[${index}].user`).then(ar => {
                 if (ar.includes(user.id)) {
@@ -76,7 +77,7 @@ module.exports = {
                 }
             })
 
-            if (include) return interaction.reply({ content: `## ${user} is already in the ticket!`, ephemeral: true });
+            if (include) return interaction.editReply({ content: `## ${user} is already in the ticket!`, ephemeral: true });
 
             await interaction.channel.permissionOverwrites.set([
                 { id: user.id, allow: PermissionsBitField.Flags.SendMessages },
@@ -101,9 +102,19 @@ module.exports = {
                 .setDescription(`Admin add ${user} to the ticket!`)
                 .setTimestamp();
 
-            interaction.reply({ embeds: [embed] });
+            interaction.channel.send({ embeds: [embed] });
+            interaction.editReply({ content: `## Success`, ephemeral: true });
 
             db.push(`ticket.${ticketowner.id}.ticket[${index}].user`, user.id);
+
+            const json = {
+                ticketowner: ticketowner.id,
+                channel: interaction.channel.id,
+                time: Math.floor(Date.now() / 1000).toString(),
+                user: user.id
+            }
+
+            client.log('useradd', loginfo(interaction, json), interaction);
         }
 
         async function remove(interaction) {

@@ -108,6 +108,7 @@ just replace **BOT_TOKEN** to your bot token, so it should look like this
 TOKEN = MTIwNTkxMjkwNzM2MJEi49fr0Ng.GLj3i4.76fhwe94FW3jBwWK_bKb9okmMZ8tyJwAc
 ```
 _don't wast your time trying login to the token, that is useless_
+
 `4 config file rename`
 
 this is last thing you need to do to finish your config setting

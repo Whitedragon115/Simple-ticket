@@ -3,9 +3,6 @@ const dt = require('discord-html-transcripts');
 const fs = require('fs');
 const request = require('request');
 
-
-const { TicketCreate } = require('../lang.json');
-
 function time() {
     //====== return the formatted time
     const currentDate = new Date();
@@ -44,33 +41,56 @@ async function transcript(interaction) {
             }
         };
 
-        //====== upload the file to the server
-        request(options, (error, response, body) => {
-            if (error) {
-                console.log('Error:', error);
-                console.log('Response:', response);
-                fs.unlinkSync(localFilePath);
-                reject(error);
-                return;
-            }
-            const responseBody = JSON.parse(body);
-            fs.unlinkSync(localFilePath);
+        //====== set up a timeout promise
+        const timeoutPromise = new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const json = {
+                    timeout: true,
+                    link: {
+                        normallink: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                        downloadlink: 'https://www.youtube.com/watch?v=8ybW48rKBME'
+                    }
+                }
+                // reject(json);
+                resolve(json);
+            }, 10000); // 设置超时为10000毫秒（即10秒）
+        });
+
+        //====== race between main operation and timeout
+        Promise.race([requestOperation(options, localFilePath), timeoutPromise]).then(responseBody => {
+            const json = JSON.parse(responseBody);
+            
 
             const embed = new EmbedBuilder()
                 .setColor(0x6eaadc)
                 .setTitle('Transcript Created!')
                 .addFields(
-                    { name: 'Transcript Link', value: `[View Online!](<${responseBody.link.normallink}>)`, inline: true },
-                    { name: 'Transcript Download', value: `[Download here](<${responseBody.link.downloadlink}>)`, inline: true }
+                    { name: 'Transcript Link', value: `[View Online!](<${json.link.normallink}>)`, inline: true },
+                    { name: 'Transcript Download', value: `[Download here](<${json.link.downloadlink}>)`, inline: true }
                 )
                 .setTimestamp();
+            if(json.timeout){
+                embed.setDescription('The transcript is taking too long to generate, please **do not click the link below!**\n_yes don\'t click it, you might get hack by me_')
+            }
 
             msg.edit({ content: "", embeds: [embed] });
-            resolve(responseBody);
+            resolve(json);
+        })
+        .catch(error => {
+            reject(error);
         });
     });
 }
 
+function requestOperation(options, localFilePath) {
+    return new Promise((resolve, reject) => {
+        //====== upload the file to the server
+        request(options, (error, response, body) => {
+            fs.unlinkSync(localFilePath);
+            resolve(body);
+        });
+    });
+}
 
 module.exports = {
     transcript,

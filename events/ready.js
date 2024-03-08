@@ -1,6 +1,7 @@
 const { Events } = require('discord.js');
-const { clientId, guildId, TicketLogChannel } = require('../config.json');
+const { clientId, guildId } = require('../config.json');
 const { QuickDB } = require('quick.db');
+const { check } = require('../function/check.js');
 const db = new QuickDB({ filePath: 'database.sqlite' });
 
 

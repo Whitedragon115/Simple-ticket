@@ -12,7 +12,7 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('category')
+                .setName('opened')
                 .setDescription('close all ticket in category!')
                 .addStringOption(option => {
                     option
@@ -21,7 +21,7 @@ module.exports = {
                         .setRequired(true)
                     const length = TicketCategory.length
                     for (let i = 0; i < length; i++) {
-                        option.addChoices({ name: TicketCategory[i].category, value: TicketCategory[i].categoryId })
+                        option.addChoices({ name: TicketCategory[i].category, value: !TicketCategory[i].categoryId ? "0" : TicketCategory[i].categoryId })
                     }
                     return option
                 })
@@ -64,6 +64,9 @@ module.exports = {
 
         function category() {
             const category_ = interaction.options.getString('category');
+            if(!parseInt(category_)){
+                return interaction.editReply({ content: 'Please check the console to fix your problem or do node deploy.js again' })
+            }
             const category = interaction.guild.channels.cache.get(category_);
 
             let i = 0;

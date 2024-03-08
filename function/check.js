@@ -123,65 +123,45 @@ async function rolecheck(client) {
 
 async function channelcheck(client) {
     const guild = await client.guilds.fetch(guildId);
-    let sucess = true;
 
-    //====== check if the channel is exist
-    if (guild.channels.cache.get(TicketChannel) == undefined) {
-        console.log('Ticket Channel not found');
-        if (!TicketChannel) {
-            if (await readlineSync('Create one for you? (y/n): ') == 'y') {
-                const name = await readlineSync('Enter the name of the channel: ');
-                const newchannel = await creatchannel(guild, name);
-                editdata('TicketChannel', newchannel.id)
-                console.log("successfully create channel " + newchannel.name, "\n-----------------------------");
-            } else {
-                sucess = false;
-            }
-        }
-    }
-    if (guild.channels.cache.get(TicketLogChannel) == undefined) {
-        console.log('Ticket Log Channel not found');
-        if (!TicketLogChannel) {
-            if (await readlineSync('Create one for you? (y/n): ') == 'y') {
-                const name = await readlineSync('Enter the name of the channel: ');
-                const newchannel = await creatchannel(guild, name);
-                editdata('TicketLogChannel', newchannel.id)
-                console.log("successfully create channel " + newchannel.name, "\n-----------------------------");
-            } else {
-                sucess = false;
-            }
-        }
-    }
+    const ticketChannelExists = await checkChannel(guild, TicketChannel, "TicketChannel");
+    const ticketLogChannelExists = await checkChannel(guild, TicketLogChannel, "TicketLogChannel");
+    let allTicketCategoriesExist = true;
     for (let i = 0; i < TicketCategory.length; i++) {
-        if (guild.channels.cache.get(TicketCategory[i].categoryId) == undefined) {
-            console.log('Ticket Category not found');
-            if (!TicketCategory[i].categoryId) {
-                if (await readlineSync('Create one for you? (y/n): ') == 'y') {
-                    const name = await readlineSync('Enter the name of the category: ');
-                    const newcategory = await creatcategory(guild, name);
-                    editcategorydata(newcategory.id, i);
-                    console.log("successfully create category " + newcategory.name, "\n-----------------------------");
+        const ticketCategoryExists = await checkChannel(guild, TicketCategory[i].categoryId, "Ticket Category type", true, i);
+        allTicketCategoriesExist = allTicketCategoriesExist && ticketCategoryExists;
+    }
+
+    const closeCategoryExists = await checkChannel(guild, CloseCategory, "CloseCategory", true);
+
+    return ticketChannelExists && ticketLogChannelExists && allTicketCategoriesExist && closeCategoryExists;
+}
+
+async function checkChannel(guild, channelId, channelName, category, i) {
+    if (!guild.channels.cache.get(channelId)) {
+        console.log(`${channelName} not found`);
+        if (!channelId) {
+            if (await readlineSync(`Create one for you? (y/n) for ${channelName}: `) == 'y') {
+                const name = await readlineSync(`Enter the name of the ${channelName}: `);
+                if (category) {
+                    const newChannel = await creatcategory(guild, name);
+                    if (channelName == "CloseCategory") {
+                        editdata(channelName, newChannel.id);
+                    } else {
+                        editcategorydata(newChannel.id, i);
+                    }
                 } else {
-                    sucess = false;
+                    const newChannel = await creatchannel(guild, name);
+                    editdata(channelName, newChannel.id);
                 }
-            }
-        }
-    }
-    if (guild.channels.cache.get(CloseCategory) == undefined) {
-        console.log('Close Category not found, you might fill a channel id instead of category id in config.json');
-        if (!CloseCategory) {
-            if (await readlineSync('Create one for you? (y/n): ') == 'y') {
-                const name = await readlineSync('Enter the name of the category: ');
-                const newcategory = await creatcategory(guild, name);
-                editdata('CloseCategory', newcategory.id)
-                console.log("successfully create category " + newcategory.name, "\n-----------------------------");
+                console.log(`Successfully create ${name}\n-----------------------------`);
             } else {
-                sucess = false;
+                return false;
             }
         }
-        sucess = false;
+        return false;
     }
-    return sucess;
+    return true;
 }
 
 async function check(client) {

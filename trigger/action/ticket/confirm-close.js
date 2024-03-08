@@ -1,9 +1,9 @@
-const { ButtonStyle, permissionOverwrites } = require('discord.js')
+const { ButtonStyle, permissionOverwrites, PermissionFlagsBits, PermissionsBitField } = require('discord.js')
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, channelLink } = require('@discordjs/builders')
 const { create } = require('discord-timestamps')
 const { QuickDB } = require('quick.db')
 
-const { CloseCategory, CreateTranscript, AutoDeleteTicket } = require('../../../config.json')
+const { CloseCategory, CreateTranscript, AutoDeleteTicket, TicketAdmin } = require('../../../config.json')
 const { transcript } = require('../../../function/ticketclose.js')
 const { loginfo } = require('../../../function/ticketuser.js')
 const db = new QuickDB({ filePath: 'database.sqlite' });
@@ -20,6 +20,7 @@ module.exports = {
 
         const row = new ActionRowBuilder()
             .addComponents(disabledButton)
+
 
         //====== disable the confirm button
         await interaction.update({ components: [row] });
@@ -74,6 +75,12 @@ module.exports = {
         //====== move the channel to close category
         const targetCategory = interaction.guild.channels.cache.get(CloseCategory);
         await interaction.channel.setParent(targetCategory);
+
+        interaction.channel.permissionOverwrites.set([
+            { id: interaction.guild.id, deny: PermissionsBitField.Flags.ViewChannel},
+            { id: TicketAdmin, allow: PermissionsBitField.Flags.ViewChannel},
+        ])
+
 
         const ticketopen = await db.get(`ticket.${ticketowner.id}.ticketopen`);
         if (!ticketopen) {

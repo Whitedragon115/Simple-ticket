@@ -32,6 +32,7 @@ module.exports = {
         
         //====== Check if the message is already created or not
         await check(client);
+
         const msg = await channel.messages.fetch();
         const msg_ = msg.find(m => m.id == TicketChannelMsgId);
         if(!TicketChannelMsgId || !msg_ || msg_.author.id != clientId){

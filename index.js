@@ -4,8 +4,9 @@ const { Client, Collection, GatewayIntentBits } = require('discord.js');
 require('dotenv').config();
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
 
-console.log('\x1B[37m===============================================\x1B[0m')
 //====================================
+
+console.log('\x1B[37m===============================================\x1B[0m')
 let c_count = 0;
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
@@ -27,6 +28,7 @@ for (const folder of commandFolders) {
 	}
 }
 console.log(`\x1B[37m-----------Load total [${c_count}] commands-----------\x1B[0m`)
+
 //====================================
 
 client.log = require('./trigger/log.js').log;
@@ -43,6 +45,7 @@ for (const file of eventFiles) {
 		client.on(event.name, (...args) => event.execute(...args, client));
 	}
 }
+
 //====================================
 const unityPath = path.join(__dirname, 'trigger');
 const unityFiles = fs.readdirSync(unityPath).filter(file => file.endsWith('.js'));
@@ -56,6 +59,7 @@ for (const file of unityFiles) {
 		client.on(event.name, (...args) => event.execute(...args, client));
 	}
 }
+
 //=====================================
 const buttonActions = {};
 const ActionFolderPath = path.join(__dirname, '.', 'trigger', 'action');
@@ -78,8 +82,9 @@ for (const folder of actionFolders) {
 			console.log(`\x1B[31m[WARNING] The trigger event at ${filePath} is missing a required "customid" or "execute" property.`);
 		}
 	}
+
+	console.log(`\x1B[37m-----------Load total[${a_count}] trigger event-----------\x1B[0m`)
+	console.log('\x1B[37m============================\x1B[0m')
 }
-console.log(`\x1B[37m-----------Load total[${a_count}] trigger event-----------\x1B[0m`)
-console.log('\x1B[37m============================\x1B[0m')
 //====================================
 client.login(process.env.TOKEN);

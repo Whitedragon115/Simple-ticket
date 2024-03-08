@@ -2,7 +2,7 @@ const { ButtonStyle, PermissionsBitField } = require('discord.js')
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, channelLink } = require('@discordjs/builders')
 const { QuickDB } = require('quick.db')
 
-const { ReopenPing, clientId } = require('../../../config.json')
+const { ReopenPing, memberrole, TicketAdmin } = require('../../../config.json')
 const { loginfo } = require('../../../function/ticketuser.js')
 const db = new QuickDB({ filePath: 'database.sqlite' });
 
@@ -51,7 +51,9 @@ module.exports = {
         //====== update the permission
         await interaction.channel.permissionOverwrites.set([
             { id: ticketowner.id, allow: PermissionsBitField.Flags.SendMessages },
-            { id: ticketowner.id, allow: PermissionsBitField.Flags.ViewChannel },
+            { id: TicketAdmin, allow: PermissionsBitField.Flags.ViewChannel },
+            { id: memberrole, deny: PermissionsBitField.Flags.ViewChannel },
+            { id: interaction.guild.roles.everyone, deny: PermissionsBitField.Flags.ViewChannel}
         ])
 
         db.set(`ticket.${ticketowner.id}.ticket[${index}].status`, true)
